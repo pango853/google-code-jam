@@ -81,16 +81,11 @@ Sample Case #1 is similar to the first one described in the problem statement. T
 Sample Case #2 is the second one described in the problem statement. Trouble Sort does not correctly sort this list, since it terminates with the list 7 9 8. The 9 is the first value in the list that is larger than the next value, so the index of the first sorting error is 1. 
 '''
 
-class CONST:
-	CHARGE = 'C'
-	SHOOT = 'S'
-	IMPOSSIBLE = 'IMPOSSIBLE'
-
 def read_int():
 	return int(input())
 
 def read_n_int(n):
-	raw_n_int = input() # NOTE: n ≤ 10^5 so we will have enough memory
+	raw_n_int = input() # NOTE: n <= 10^5 so we will have enough memory
 	n_list = []
 	for i in raw_n_int.split():
 		n_list.append(int(i))
