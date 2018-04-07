@@ -71,10 +71,8 @@ The following rough image shows the cubes and shadows for Sample Cases #1 and #2
 '''
 
 #from math import pi as PI
-
-from math import acos, cos, sin
+from math import acos, cos, sin, atan
 from decimal import Decimal
-PI = Decimal('3.14159265358979323846264338327950288419716939937510')
 
 def read_int():
 	return int(input().strip())
@@ -83,60 +81,113 @@ def read_decimal():
 	return Decimal(input().strip())
 
 def normalize(x, y, z):
-	EPS = Decimal('0.0000000000001')
-	if abs(x) < EPS: x = 0
-	if abs(y) < EPS: y = 0
-	if abs(z) < EPS: z = 0
+	if abs(x) < DEPS: x = 0
+	if abs(y) < DEPS: y = 0
+	if abs(z) < DEPS: z = 0
 
-	return x, y, z
+	return [x, y, z]
 
-def print_it_now(case_n, theta_org):
+def rotate_x(vertices, delta):
+	# rotate X
+	#y = y cos(a) - z sin(a)
+	#z = y sin(a) + z cos(a)
+	for xyz in vertices:
+		y0 = xyz[1]
+		z0 = xyz[2]
+		xyz[1] = y0 * Decimal(cos(delta)) - z0 * Decimal(sin(delta))
+		xyz[2] = y0 * Decimal(sin(delta)) + z0 * Decimal(cos(delta))
+
+def print_it_now(case_n, theta_org, delta=Decimal(0)):
 	ans = 'Case #%s:' % (case_n)
 	# ensure stdout flush
 	print(ans, flush=True)
 
-	theta = theta_org - Decimal(PI)/Decimal(4)
+	# VISIBLE case
+	if delta.is_zero():
+		theta = theta_org + Decimal(DPI)/Decimal(4)
+		vertices = [normalize(Decimal(sin(theta))/2, Decimal(cos(theta))/2, 0), \
+			normalize(-Decimal(cos(theta))/2, Decimal(sin(theta))/2, 0), \
+			normalize(0, 0, 0.5)]
+
+	else:	# HIDDEN case
+		# ==; OK this is also kind of cheating
+		vertices = [[(Decimal(1)/Decimal(8)).sqrt(), (Decimal(1)/Decimal(8)).sqrt(), 0], \
+			[-(Decimal(1)/Decimal(8)).sqrt(), (Decimal(1)/Decimal(8)).sqrt(), 0], \
+			[Decimal(0), Decimal(0), Decimal(1)/Decimal(2)]]
+
+		rotate_x(vertices, delta)
+
 	# coordinate 1
-	x, y, z = normalize(\
-		Decimal(-0.5) * Decimal(sin(theta)), \
-		Decimal(0.5) * Decimal(cos(theta)), \
-		0)
-	ans = '%.16g %.16g %.16g' % (x, y, z)
+	i = 0
+	ans = '%.16g %.16g %.16g' % tuple(vertices[i])
 	print(ans, flush=True)
 
 	# coordinate 2
-	x, y, z = normalize(\
-		Decimal(0.5) * Decimal(cos(theta)), \
-		Decimal(0.5) * Decimal(sin(theta)), \
-		0)
-	ans = '%.16g %.16g %.16g' % (x, y, z)
+	i = 1
+	ans = '%.16g %.16g %.16g' % tuple(vertices[i])
 	print(ans, flush=True)
 
 	# coordinate 3
-	x, y, z = normalize(\
-		0, 0, 0.5)
-	ans = '%.16g %.16g %.16g' % (x, y, z)
+	i = 2
+	ans = '%.16g %.16g %.16g' % tuple(vertices[i])
 	print(ans, flush=True)
+
+
+DROOT2 = Decimal(2).sqrt()
+DPI = Decimal('3.14159265358979323846264338327950288419716939937510')
+DEPS = Decimal('0.0000000000000001')
+DEPS2 = Decimal('0.00000001')
+
+def f(x):
+	''' area = sin(b) + sqrt(2) * cos(b) '''
+	return Decimal(sin(x)) + DROOT2 * Decimal(cos(x))
+
+def fd(x):
+	''' area = cos(b) - sqrt(2) * sin(b) '''
+	return Decimal(cos(x)) - DROOT2 * Decimal(sin(x))
+
+def optimize_delta(area):
+	theta0 = Decimal(DPI/8) # Try to start at any angle
+	while True:
+		fx0 = f(theta0)
+		fdx0 = fd(theta0)
+
+		if abs(fx0 - area) < DEPS:
+			break # Good enough
+		if abs(fdx0) < DEPS:
+			theta0 = atan(Decimal(1) / Decimal(2).sqrt()) # We already knew this answer
+			break # f'(x0) cannot be zero!
+
+		theta1 = (area - fx0)/fdx0 + theta0
+
+		if abs(theta1 - theta0) < DEPS:
+			break # Can't go any further ><;
+
+		# Recursively
+		theta0 = theta1
+
+	return theta0
 
 
 def play_a_round(case_n):
 	area = read_decimal() # 1.000000 <= A <= 1.414213, 1.000000 <= A <= 1.732050
 
-	#D1 = Decimal(1)
-	DROOT2 = Decimal(2).sqrt()
-
 	# DEBUG Not yet supported HIDDEN cases
 	if area > DROOT2:
-		area = DROOT2
-
-	theta = Decimal(acos(area/DROOT2))
+		# Rotate x axis after rotated z axis(->0)
+		theta = Decimal(0) # OK I am cheating here. We all already knew it
+		delta = optimize_delta(area)
+	else:
+		# Fix P3 as [0, 0, 0.5] and rotate z axis
+		theta = Decimal(acos(area/DROOT2))
+		delta = Decimal(0)
 
 	# DEBUG
 	#DPI = Decimal(PI)
 	#deg = theta / DPI * Decimal(180)
 	#print(deg)
 
-	print_it_now(case_n, theta)
+	print_it_now(case_n, theta, delta)
 
 
 if '__main__' == __name__:
