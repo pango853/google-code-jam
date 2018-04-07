@@ -71,8 +71,10 @@ The following rough image shows the cubes and shadows for Sample Cases #1 and #2
 '''
 
 #from math import pi as PI
+
 from math import acos, cos, sin
 from decimal import Decimal
+PI = Decimal('3.14159265358979323846264338327950288419716939937510')
 
 def read_int():
 	return int(input().strip())
@@ -81,97 +83,60 @@ def read_decimal():
 	return Decimal(input().strip())
 
 def normalize(x, y, z):
-	return 0 if abs(x) < DEPS2 else x, \
-		0 if abs(y) < DEPS2 else y, \
-		0 if abs(z) < DEPS2 else z
+	EPS = Decimal('0.0000000000001')
+	if abs(x) < EPS: x = 0
+	if abs(y) < EPS: y = 0
+	if abs(z) < EPS: z = 0
 
-def print_it_now(case_n, fx, fdx):
+	return x, y, z
+
+def print_it_now(case_n, theta_org):
 	ans = 'Case #%s:' % (case_n)
 	# ensure stdout flush
 	print(ans, flush=True)
 
-	# P1
-	x, y, z = normalize(fdx/2, fdx/2, 0)
+	theta = theta_org - Decimal(PI)/Decimal(4)
+	# coordinate 1
+	x, y, z = normalize(\
+		Decimal(-0.5) * Decimal(sin(theta)), \
+		Decimal(0.5) * Decimal(cos(theta)), \
+		0)
 	ans = '%.16g %.16g %.16g' % (x, y, z)
 	print(ans, flush=True)
 
-	# P2
-	x, y, z = normalize(fx/2, -fdx/2, 0)
+	# coordinate 2
+	x, y, z = normalize(\
+		Decimal(0.5) * Decimal(cos(theta)), \
+		Decimal(0.5) * Decimal(sin(theta)), \
+		0)
 	ans = '%.16g %.16g %.16g' % (x, y, z)
 	print(ans, flush=True)
 
-	# coordinate 3 !!! Fixed. Only works for VISIBLE case
-	x, y, z = normalize(0, 0, 0.5)
+	# coordinate 3
+	x, y, z = normalize(\
+		0, 0, 0.5)
 	ans = '%.16g %.16g %.16g' % (x, y, z)
 	print(ans, flush=True)
 
-
-DROOT2 = Decimal(2).sqrt()
-DPI = Decimal('3.14159265358979323846264338327950288419716939937510')
-DEPS = Decimal('0.0000000000000001')
-DEPS2 = Decimal('0.00000001')
-
-def f(x):
-	return (Decimal(cos(x)) + Decimal(sin(x))) * DROOT2
-
-def fd(x):
-	return (Decimal(cos(x)) - Decimal(sin(x))) * DROOT2
-
-def debug(theta0, fx0, fdx0):
-	deg = theta0 / DPI * 180
-	print('DEBUG x=%.12g, f(x)=%.12g, f\'(x)=%.12g' % (deg, fx0, fdx0))
 
 def play_a_round(case_n):
 	area = read_decimal() # 1.000000 <= A <= 1.414213, 1.000000 <= A <= 1.732050
 
-	'''
-		Just fix P3 = [0, 0, 0.5] and rotate with P1, P2!!! Only works for VISIBLE case
-			area = ( cos(x) + sin(x) ) * 2 / sqrt(2)
-		Find the x with steepest decent method
-			P1 = [cos(x+PI/4)/2, sin(x+PI/4)/2, 0]
-			P2 = [cos(x-PI/4)/2, sin(x-PI/4)/2, 0]
-		Can be resolve to
-			P1 = [f'(x)/2, f(x)/2, 0]
-			P2 = [f(x)/2, -f'(x)/2, 0]
-	'''
+	#D1 = Decimal(1)
+	DROOT2 = Decimal(2).sqrt()
 
-	theta0 = Decimal(DPI/8) # Try to start at any angle, but just excep PI/4
-	cnt = 0
-	while True:
-		cnt += 1
-		if cnt > 10: break
+	# DEBUG Not yet supported HIDDEN cases
+	if area > DROOT2:
+		area = DROOT2
 
-		fx0 = f(theta0)
-		fdx0 = fd(theta0)
+	theta = Decimal(acos(area/DROOT2))
 
-		debug(theta0, fx0, fdx0)
+	# DEBUG
+	#DPI = Decimal(PI)
+	#deg = theta / DPI * Decimal(180)
+	#print(deg)
 
-		if abs(fx0 - area) < DEPS:
-			break # Good enough
-		if abs(fdx0) < DEPS:
-			fx0 = Decimal(1)
-			fdx0 = Decimal(0)
-			theta0 = DPI / 4
-			break # f'(x0) cannot be zero!
-
-		theta1 = (area - fx0)/fdx0 + theta0
-
-		print(theta1)
-		print(theta1 / DPI * 180)
-		if abs(theta1 - theta0) < DEPS:
-			break # Can't go any further ><;
-
-		# The range is [0 PI/4], don't let it go too far
-		if theta1 > DPI/4:
-			theta1 = DPI/4 * Decimal(0.95)
-		elif theta1 < 0:
-			theta1 = DPI/180
-
-		# Recursively
-		theta0 = theta1
-
-	debug(theta0, fx0, fdx0)
-	print_it_now(case_n, fx0, fdx0)
+	print_it_now(case_n, theta)
 
 
 if '__main__' == __name__:
