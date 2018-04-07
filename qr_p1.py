@@ -90,8 +90,6 @@ In Sample Case #5, the robot will never shoot, and so it will never do any damag
 In Sample Case #6, five hacks are required. Notice that even if two hacks swap the instructions at the same two positions, they still count as separate hacks.
 '''
 
-import math
-
 class CONST:
 	CHARGE = 'C'
 	SHOOT = 'S'
