@@ -74,7 +74,7 @@ def read_two_int():
 	raw_int_list = raw_two_int.split()
 	return int(raw_int_list[0]), int(raw_int_list[1])
 
-def init_map(m=3, n=67):
+def init_map(m, n):
 	empty_map = []
 	for _ in range(m):
 		empty_map.append([0] * n)
@@ -96,7 +96,6 @@ def add2nbmap(nbmap, i, j):
 def update_orchard(i, j, orchard):
 	orchard[i][j] += 1
 
-#def is_edge_filled(i, j, orchard, offset=-1):
 def is_edge_filled(i, j, orchard, offset=-1):
 	#print('DEBUG orchard[%d][%d] = %d', i-1, j+offset, orchard[i-1][j+offset])
 	#print('DEBUG orchard[%d][%d] = %d', i, j+offset, orchard[i][j+offset])
@@ -114,12 +113,15 @@ def debug_grids(round_n, orchard, m, n):
 	print('----------------------')
 	print(flush=True)
 
-def play_a_round(area):
+def play_a_round():
+	area = read_int()
+
 	last_col_idx = math.ceil(1.0*area/3)
 	m = 3+1
 	n = last_col_idx + 1
 
 	#print('DEBUG last_col_idx = %d' % (last_col_idx))
+	#sys.stderr.write('!!! EDEBUG m,n = %d,%d   area=%d\n' % (m, n, area))
 	orchard = init_map(m, n)
 
 	# Start from (1,1)
@@ -142,8 +144,8 @@ def play_a_round(area):
 		if is_edge_filled(i_target, j_target, orchard):
 			j_target += 1
 
-		if j_target > last_col_idx:
-			j_target = last_col_idx
+		if j_target > last_col_idx-1:
+			j_target = last_col_idx-1
 			if is_edge_filled(i_target, j_target, orchard, -1) and \
 				is_edge_filled(i_target, j_target, orchard, 0) and \
 				is_edge_filled(i_target, j_target, orchard, 1):
@@ -151,6 +153,7 @@ def play_a_round(area):
 
 		cnt += 1
 		i_go, j_go = deploy_gopher(i_target, j_target)
+		#sys.stderr.write('!!! DEBUG want(i,j)=(%d,%d)  go(i,j)=(%d,%d)\n' % (i_target, j_target, i_go, j_go))
 		update_orchard(i_go, j_go, orchard)
 		#print('DEBUG want(i,j)=(%d,%d)  go(i,j)=(%d,%d)' % (i_target, j_target, i_go, j_go))
 
@@ -172,14 +175,13 @@ def play_a_round(area):
 if '__main__' == __name__:
 	# Read number of test cases
 	t = read_int()
-	a = read_int()
 
 	# Count up test cases
 	t_count = 0
 	while t_count < t:
 		t_count += 1
 
-		play_a_round(a)
+		play_a_round()
 
 '''
 Input
