@@ -45,77 +45,36 @@ Input	Output
 In Sample Case #1, notice that A and B can be the same. The only other possible answers are 1 3 and 3 1. 
 '''
 
-class CONST:
-	CHARGE = 'C'
-	SHOOT = 'S'
-	IMPOSSIBLE = 'IMPOSSIBLE'
 
 def read_int():
 	return int(input())
 
-def read_int_str():
-	raw_two_int = input()
-	raw_int_list = raw_two_int.split()
-	return int(raw_int_list[0]), raw_int_list[1]
-
-def print_it_now(case_n, hack_num=None):
-	if hack_num is None:
-		ans = 'Case #%s: %s' % (case_n, CONST.IMPOSSIBLE)
-	else:
-		ans = 'Case #%s: %d' % (case_n, hack_num)
+def answer(case_n, a, b):
+	ans = 'Case #%d: %d %d' % (case_n, a, b)
 	# ensure stdout flush
 	print(ans, flush=True)
 
-def cal_damage(instruction_chars):
-	damage = 0
-	strength = 1
-
-	pos_last_movable_c = -1
-	last_c = -1
-	for i, ch in enumerate(instruction_chars):
-		if CONST.CHARGE == ch:
-			last_c = i
-			strength *= 2
-		elif CONST.SHOOT == ch:
-			pos_last_movable_c = last_c
-			damage += strength
-	#print("#DEBUG damage = %d" % damage)
-	#print("#DEBUG pos_last_movable_c = %d" % pos_last_movable_c)
-	return damage, pos_last_movable_c
-
-def hack_it(swap_pos, instruction_chars):
-	return instruction_chars[:swap_pos] + \
-		instruction_chars[swap_pos+1] + \
-		instruction_chars[swap_pos] + \
-		instruction_chars[(swap_pos+2):]
-
 def play_a_round(case_n):
-	max_demage, instructions = read_int_str()
+	n = read_int()
 
-	#print("#DEBUG input: %d %s" % (max_demage, instructions))
+	a = 0
+	b = 0
+	i = 0
+	while n > 0:
+		n_i = n % 10
+		n = int(n / 10)
 
-	# Fail at the beginning
-	if instructions.count(CONST.SHOOT) > max_demage:
-		print_it_now(case_n, None)
-		return
+		if n_i == 4:
+			a_i = 1
+			b_i = n_i - a_i
+		else:
+			a_i = n_i
+			b_i = 0
+		a += a_i * (10**i)
+		b += b_i * (10**i)
 
-	hack_count = 0
-	while True:
-		damage, pos_c = cal_damage(instructions)
-		# We made it!!!
-		if damage <= max_demage:
-			print_it_now(case_n, hack_count)
-			break
-
-		# We failed!
-		if pos_c == -1:
-			print_it_now(case_n, None)
-			break
-
-		# Now we hack
-		hack_count += 1
-		instructions = hack_it(pos_c, instructions)
-		#print("#DEBUG instructions = %s" % instructions)
+		i += 1
+	answer(case_n, a, b)
 
 
 if '__main__' == __name__:
@@ -131,19 +90,15 @@ if '__main__' == __name__:
 
 '''
 Input
-	6
-	1 CS
-	2 CS
-	1 SS
-	6 SCCSSC
-	2 CC
-	3 CSCSS
+
+3
+4
+940
+4444
 
 Output
-	Case #1: 1
-	Case #2: 0
-	Case #3: IMPOSSIBLE
-	Case #4: 2
-	Case #5: 0
-	Case #6: 5
+  
+Case #1: 2 2
+Case #2: 852 88
+Case #3: 667 3777
 '''
