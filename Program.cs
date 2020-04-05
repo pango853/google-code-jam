@@ -14,7 +14,10 @@ namespace google_code_jam
       //QRProblem1Vestigium.SubMain(args);
 
       // RUN: dotnet run < QRProblem2.dat
-      QRProblem2NestingDepth.SubMain(args);
+      //QRProblem2NestingDepth.SubMain(args);
+
+      // RUN: dotnet run < QRProblem3.dat
+      QRProblem3ParentingPartneringReturns.SubMain(args);
     }
 	}
 }
