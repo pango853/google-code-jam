@@ -205,12 +205,12 @@ namespace google_code_jam
 
 			answer = GoNext(i+1, size, activities, stackC, stackJ, answer);
 
-			// Re-ordering answer
 			if(null == answer){
 				Console.WriteLine("Case #{0}: {1}", c_ase, IMPOSSIBLE);
 			}
 			else
 			{
+				// Re-ordering answer
 				char[] charAry = answer.ToCharArray();
 				int idx = 0;
 				foreach(Activity one in activities)
