@@ -211,16 +211,11 @@ namespace google_code_jam
 			else
 			{
 				// Re-ordering answer
-				char[] charAry = answer.ToCharArray();
+				char[] charAry = new char[size];
 				int idx = 0;
 				foreach(Activity one in activities)
 				{
-					if(one.Position != idx)
-					{
-						char swp = charAry[idx];
-						charAry[idx] = charAry[one.Position];
-						charAry[one.Position] = swp;
-					}
+					charAry[one.Position] = answer[idx];
 					idx++;
 				}
 				Console.WriteLine("Case #{0}: {1}", c_ase, new string(charAry));
