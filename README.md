@@ -9,7 +9,7 @@ My solutions for Google Code Jam problems.
 
 1. Vestigium                    *7 points* => 7 points
 2. Nesting Depth                *5, 11 points* => 16 points
-3. Parenting Partnering Returns *7, 12 points* => Timed out and Wrong Answer
+3. Parenting Partnering Returns *7, 12 points* => 0 point. Time is up here. Test set 1 seems to be passed but got timed out for Test set 2
 4. ESAb ATAd                    *1, 9, 16 points*
 5. Indicium                     *7, 25 points*
 
